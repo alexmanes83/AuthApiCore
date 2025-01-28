@@ -4,12 +4,8 @@
     {
         public string Email { get; set; }
         public string Password { get; set; }
-        public RegisterModel(string mail, string password)
-        {
+        // Construtor padrão
+        public RegisterModel() { }
 
-            Email = mail;
-            Password = password;
-
-        }
     }
 }
