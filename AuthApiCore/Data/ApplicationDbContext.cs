@@ -10,6 +10,6 @@ namespace AuthApiCore.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-        public DbSet<CustomUser> CustomUsers { get; set; }
+        public DbSet<CustomUser> CustomUsers { get; set; }  
     }
 }
