@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.EntityFrameworkCore.Query;
+using Newtonsoft.Json.Linq;
 namespace AuthApiCore.Tests
 {
     public class AuthoControllerTest : IClassFixture<WebApplicationFactory<AuthController>>
@@ -36,16 +37,22 @@ namespace AuthApiCore.Tests
                 Email = email,
                 Password = password
             };
-            var json = JsonConvert.SerializeObject(loginRequest);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var content = CreateJsonContent(loginRequest);
+
             // Act
             var response = await _client.PostAsync("/api/auth/login", content);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            // Verificar se a resposta foi bem-sucedida
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = JsonConvert.DeserializeObject<JObject>(responseBody);  // Mudança para JObject
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<dynamic>(responseBody);
-            result.Should().Contain("Token");
+            var token = result["token"]; // Acessando a propriedade específica
+            token.Should().NotBeNull(); // Certifique-se de que o token não seja nulo
+            token.ToString().Should().NotBeEmpty(); // Certifique-se de que o token não esteja vazio
         }
 
         //[Fact]
@@ -113,10 +120,10 @@ namespace AuthApiCore.Tests
         //    responseBody.Should().Be("Logged out successfully");
         //}
 
-        //private StringContent CreateJsonContent(object obj)
-        //{
-        //    var json = JsonConvert.SerializeObject(obj);
-        //    return new StringContent(json, Encoding.UTF8, "application/json");
-        //}
+        private StringContent CreateJsonContent(object obj)
+        {
+            var json = JsonConvert.SerializeObject(obj);
+            return new StringContent(json, Encoding.UTF8, "application/json");
+        }
     }
 }
