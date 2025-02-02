@@ -17,27 +17,29 @@ namespace AuthApiCore.Tests
     public class AuthoControllerTest : IClassFixture<WebApplicationFactory<AuthController>>
     {
 
-        private HttpClient _client;
-       
+        private readonly HttpClient _client;
 
-        public void AuthControllerTests(WebApplicationFactory<AuthController> factory)
+        public AuthoControllerTest(WebApplicationFactory<AuthController> factory)
         {
             _client = factory.CreateClient();
         }
 
 
-        [Fact]
-        public async Task Login_ValidUser_ReturnsOk()
+        [Theory]
+        [InlineData("alexmanes83@gmail.com", "Hlpm1741@")]
+        [InlineData("invalidUser@gmail.com", "invalidPassword@")]
+        public async Task Login_ValidUser_ReturnsOk(string email,string password)
         {
             // Arrange
             var loginRequest = new
             {
-                Email = "teste1234556@gmail.com",
-                Password = "Aftc2680inpu@"
+                Email = email,
+                Password = password
             };
-
+            var json = JsonConvert.SerializeObject(loginRequest);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
             // Act
-            var response = await _client.PostAsync("/api/auth/login", CreateJsonContent(loginRequest));
+            var response = await _client.PostAsync("/api/auth/login", content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
