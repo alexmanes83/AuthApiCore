@@ -11,8 +11,8 @@ EXPOSE 8081
 # Esta fase é usada para compilar o projeto de serviço
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["AuthApiCore/AuthApiCore.csproj", "AuthApiCore/"]
+WORKDIR /repos
+COPY ["./AuthApiCore/AuthApiCore.csproj", "./AuthApiCore/"]
 RUN dotnet restore "./AuthApiCore/AuthApiCore.csproj"
 COPY . .
 WORKDIR "/src/AuthApiCore"
